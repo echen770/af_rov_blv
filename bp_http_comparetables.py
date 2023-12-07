@@ -38,17 +38,6 @@ def compare_tables(sql_table, dataverse_table):
         row for row in dataverse_table if row["contest_id"] not in ids_sql_table
     ]
 
-    # Rows in both tables but with different values
-    # common_rows_diff_values = [
-    #     row
-    #     for row in sql_table
-    #     if row in dataverse_table
-    #     and row
-    #     != next(
-    #         (r for r in dataverse_table if r["contest_id"] == row["contest_id"]), None
-    #     )
-    # ]
-
     common_rows_diff_values = [
         row1
         for row1 in sql_table
@@ -56,16 +45,6 @@ def compare_tables(sql_table, dataverse_table):
         if row1["contest_id"] == row2["contest_id"] and not compare_rows(row1, row2)
     ]
 
-    # Rows in both tables that are the same
-    # common_rows_same_values = [
-    #     row
-    #     for row in sql_table
-    #     if row in dataverse_table
-    #     and row
-    #     == next(
-    #         (r for r in dataverse_table if r["contest_id"] == row["contest_id"]), None
-    #     )
-    # ]
     common_rows_same_values = [
         row1
         for row1 in sql_table
