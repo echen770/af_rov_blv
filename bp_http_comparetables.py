@@ -13,10 +13,21 @@ def replace_null_with_empty_string(row):
 
 def compare_rows(row1, row2):
     # Compare each key-value pair in the rows
+    # This ignores any additional columns in row2 because it only iterate through
+    # fields in row1. It allows us to attached GUIDs columns in the dataverse tables
+    # for use with updates and deletes/deactivate and not affecting the comparison
+    # results.
     for key, value in row1.items():
         if key != "contest_id" and row2.get(key) != value:
             return False
     return True
+
+
+def copy_dv_guid(row1, row2):
+    # Copy dv_guid from row2 to row1
+    if "dv_guid" in row2:
+        row1["dv_guid"] = row2["dv_guid"]
+    return row1
 
 
 def compare_tables(sql_table, dataverse_table):
@@ -38,24 +49,17 @@ def compare_tables(sql_table, dataverse_table):
         row for row in dataverse_table if row["contest_id"] not in ids_sql_table
     ]
 
+    # Rows in both tables but with different values
     common_rows_diff_values = [
-        row1
+        copy_dv_guid(row1, row2)
         for row1 in sql_table
         for row2 in dataverse_table
         if row1["contest_id"] == row2["contest_id"] and not compare_rows(row1, row2)
     ]
 
-    common_rows_same_values = [
-        row1
-        for row1 in sql_table
-        for row2 in dataverse_table
-        if row1["contest_id"] == row2["contest_id"] and compare_rows(row1, row2)
-    ]
-
     return (
         only_in_sql_table,
         only_in_dataverse_table,
-        common_rows_same_values,
         common_rows_diff_values,
     )
 
@@ -70,14 +74,12 @@ def comparetbl(req: func.HttpRequest) -> func.HttpResponse:
         (
             only_in_sql_table,
             only_in_dataverse_table,
-            common_rows_same_values,
             common_rows_diff_values,
         ) = compare_tables(sql_table, dataverse_table)
 
         result = {
             "only_in_sql_table": only_in_sql_table,
             "only_in_dataverse_table": only_in_dataverse_table,
-            "common_rows_same_values": common_rows_same_values,
             "common_rows_diff_values": common_rows_diff_values,
         }
 
