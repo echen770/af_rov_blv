@@ -33,6 +33,9 @@ def copy_dv_guid(row1, row2):
 # def compare_tables(sql_table, dataverse_table):
 def compare_tables(sql_table, dataverse_table, primary_key):
     # Replace null values with empty strings in both tables
+    if sql_table is None:
+        sql_table = []
+
     sql_table = [replace_null_with_empty_string(row) for row in sql_table]
     dataverse_table = [replace_null_with_empty_string(row) for row in dataverse_table]
 
