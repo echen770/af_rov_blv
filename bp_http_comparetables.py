@@ -17,8 +17,15 @@ def compare_rows(row1, row2, primary_key):
     # fields in row1. It allows us to attached GUIDs columns in the dataverse tables
     # for use with updates and deletes/deactivate and not affecting the comparison
     # results.
+
+    # for key, value in row1.items():
+    #     if key != primary_key and row2.get(key) != value:
+    #         return False
+    # return True
+
+    ignore_columns = ["gender"] if primary_key == "candidate_id" else []
     for key, value in row1.items():
-        if key != primary_key and row2.get(key) != value:
+        if key != primary_key and key not in ignore_columns and row2.get(key) != value:
             return False
     return True
 
