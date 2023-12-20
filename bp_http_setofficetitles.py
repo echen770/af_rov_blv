@@ -1,9 +1,6 @@
 import azure.functions as func
-import logging
 import json
-import base64
 import traceback
-import io
 
 bp_set_office_title = func.Blueprint()
 
